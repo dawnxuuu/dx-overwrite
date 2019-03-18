@@ -29,11 +29,11 @@
     this.$methods = options.methods;
 
     this._binding = {};
-    this._obverse(this.$data);
+    this._observer(this.$data);
     this._complie(this.$el);
   }
  
-  myVue.prototype._obverse = function (obj) {
+  myVue.prototype._observer = function (obj) {
     var value;
     for (key in obj) {
       if (obj.hasOwnProperty(key)) {
@@ -42,7 +42,7 @@
         };
         value = obj[key];
         if (typeof value === 'object') {
-          this._obverse(value);
+          this._observer(value);
         }
         var binding = this._binding[key];
         Object.defineProperty(this.$data, key, {
