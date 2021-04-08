@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TEST Promise</title>
+  <script src="./promise-xuqiang521.js" charset="utf-8"></script>
+</head>
+<body>
+</body>
+<script>
+  const test1 = new Promise((resolve, reject) => {
+    console.log(1)
+    setTimeout(() => {
+      resolve('res')
+    }, 2000);
+    console.log(2)
+  })
+  
+  test1.then((data) => {
+    console.log(data)
+  })
+</script>
+</html>
