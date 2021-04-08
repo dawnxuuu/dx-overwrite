@@ -11,9 +11,9 @@ class MyPromise {
   // 失败的原因
   reason = null
   // 存储成功的回调
-  onFulfilledCallback = null
+  onFulfilledCallbacks = []
   // 存储失败的回调
-  onRejectedCallback = null
+  onRejectedCallbacks = []
 
   constructor(executer) {
     // 立即执行executer，传入两个函数实参
@@ -29,8 +29,10 @@ class MyPromise {
       this.status = FULFILLED
       // 保存成功后的值
       this.value = value
-      // 如果存在成功回调则调用
-      this.onFulfilledCallback && this.onFulfilledCallback(value)
+      // 多个then注册的成功回调依次调用
+      while (this.onFulfilledCallbacks.length) {
+        this.onFulfilledCallbacks.shift()(value)
+      }
     }
   }
 
@@ -41,8 +43,10 @@ class MyPromise {
       this.status = REJECTED
       // 保存失败后的值
       this.reason = reason
-      // 如果失败回调存在则调用
-      this.onRejectedCallback && this.onRejectedCallback(reason)
+      // 多个then注册的失败回调依次调用
+      while (this.onRejectedCallbacks.length) {
+        this.onRejectedCallbacks.shift()(reason)
+      }
     }
   }
 
@@ -54,12 +58,12 @@ class MyPromise {
     } else if (this.status === REJECTED) {
       // 调用失败回调，并传入失败的原因
       onRejected(this.reason)
-    } else if (this.status === PENDING) {
+    } else if (this.status === PENDING) { // 解决异步问题
       // 调用then时如果此时状态还是pending，说明异步任务还没拿到结果，
       // 暂时先把成功和失败的回调函数存起来，
       // 等到resolve或reject调用时再执行then中的回调。
-      this.onFulfilledCallback = onFulfilled
-      this.onRejectedCallback = onRejected
+      this.onFulfilledCallbacks.push(onFulfilled)
+      this.onRejectedCallbacks.push(onRejected)
     }
   }
 }

@@ -14,13 +14,19 @@
         resolve('success')
       }, 500)
       
-      console.log('=xu=2')
+      console.log('=xu=')
     })
 
     promise.then((result) => {
-      console.log('then 成功', result)
-    }, (reason) => {
-      console.log('then 失败')
+      console.log('then成功1', result)
+    })
+
+    promise.then((result) => {
+      console.log('then成功2', result)
+    })
+
+    promise.then((result) => {
+      console.log('then成功3', result)
     })
   </script>
 </body>
