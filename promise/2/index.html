@@ -11,23 +11,32 @@
   <script>
     const promise = new MyPromise((resolve, reject) => {
       setTimeout(() => {
-        resolve('success')
-      }, 500)
-      
-      console.log('=xu=')
+        reject('fail')
+      }, 1000)
+      // resolve('success')
     })
 
-    promise.then((result) => {
-      console.log('then成功1', result)
+    function other () {
+      return new MyPromise((resolve, reject) => {
+        resolve('other')
+      })
+    }
+
+    promise
+    .then()
+    .then()
+    .then(
+      value => console.log('then成功2', value),
+      reason => console.log('then失败2', reason)
+      )
+
+    MyPromise.resolve().then(() => {
+      console.log('0')
+      return MyPromise.resolve(4)
+    }).then(res => {
+      console.log(res)
     })
 
-    promise.then((result) => {
-      console.log('then成功2', result)
-    })
-
-    promise.then((result) => {
-      console.log('then成功3', result)
-    })
   </script>
 </body>
 </html>
