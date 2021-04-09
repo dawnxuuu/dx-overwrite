@@ -141,11 +141,51 @@ function resolvePromise(promiseInstance, returned, resolve, reject) {
     return reject(new TypeError('Chaining cycle detected for promise #<Promise>'))
   }
 
-  // 判断returned是不是 MyPromise 实例对象
-  if (returned instanceof MyPromise) {
-    // 执行returned，调用then方法，目的是将其状态变为fulfilled或rejected
-    returned.then(resolve, reject)
+  if (typeof returned === 'object' || typeof returned === 'function') {
+    if (returned === null) return resolve(returned)
+
+    let then
+    try {
+      then = returned.then
+    } catch (error) {
+      return reject(error)
+    }
+
+    if (typeof then === 'function') {
+      let called = false
+      try {
+        then.call(
+          returned,
+          y => {
+            if (called) return
+            called = true
+            resolvePromise(promiseInstance, y, resolve, reject)
+          },
+          r => {
+            if (called) return
+            called = true
+            reject(r)
+          }
+        )
+      } catch (error) {
+        if (called) return
+        reject(error)
+      }
+    } else {
+      resolve(returned)
+    }
   } else {
     resolve(returned)
   }
 }
+
+MyPromise.deferred = function () {
+  var result = {};
+  result.promise = new MyPromise(function (resolve, reject) {
+    result.resolve = resolve;
+    result.reject = reject;
+  });
+
+  return result;
+}
+module.exports = MyPromise;

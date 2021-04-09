@@ -1,0 +1,14 @@
+{
+  "name": "dx-overwrite",
+  "version": "1.0.0",
+  "description": "Overwrite some common javascript patterns/methods.",
+  "main": "promise/2/promise.js",
+  "scripts": {
+    "test": "promises-aplus-tests promise/2/promise.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "promises-aplus-tests": "^2.1.2"
+  }
+}
