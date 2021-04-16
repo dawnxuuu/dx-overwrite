@@ -7,9 +7,9 @@ class MyPromise {
   // 存储状态，初始为pending
   status = PENDING
   // 成功后的值
-  value = ''
+  value = null
   // 失败后的值
-  reason = ''
+  reason = null
 
   constructor (executer) {
     // executer会立即执行，传入resolve,reject两个函数参数
@@ -36,6 +36,17 @@ class MyPromise {
       this.status = REJECTED
       // 保存失败后的值
       this.reason = reason
+    }
+  }
+
+  then (onFulfilled, onRejected) {
+    // 判断状态
+    if (this.status === FULFILLED) {
+      // 若是成功状态，调用成功回调，并传参返回值
+      onFulfilled(this.value)
+    } else if (this.status === REJECTED) {
+      // 若是失败状态，调用失败回调，并传参失败原因
+      onRejected(this.reason)
     }
   }
 }
