@@ -29,7 +29,7 @@ class MyPromise {
   }
 
   // 执行器中传入的reject函数，用来将状态变为rejected
-  reject = () => {
+  reject = (reason) => {
     // 只有状态是等待，才执行状态修改
     if (this.status === PENDING) {
       // 状态改为失败

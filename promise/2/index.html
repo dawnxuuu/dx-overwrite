@@ -5,38 +5,22 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <script src="promise.js"></script>
+  <script src="MyPromise.js"></script>
 </head>
 <body>
   <script>
     const promise = new MyPromise((resolve, reject) => {
-      setTimeout(() => {
-        reject('fail')
-      }, 1000)
-      // resolve('success')
+      reject('error')
+      resolve('success')
     })
 
-    function other () {
-      return new MyPromise((resolve, reject) => {
-        resolve('other')
+    promise.then(
+      (value) => {
+        console.log('then onResolved', value)
+      },
+      (reason) => {
+        console.log('then onRejected', reason)
       })
-    }
-
-    promise
-    .then()
-    .then()
-    .then(
-      value => console.log('then成功2', value),
-      reason => console.log('then失败2', reason)
-      )
-
-    MyPromise.resolve().then(() => {
-      console.log('0')
-      return MyPromise.resolve(4)
-    }).then(res => {
-      console.log(res)
-    })
-
   </script>
 </body>
 </html>
