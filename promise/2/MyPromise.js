@@ -52,18 +52,25 @@ class MyPromise {
   }
 
   then (onFulfilled, onRejected) {
-    // 判断状态
-    if (this.status === FULFILLED) {
-      // 若是成功状态，调用成功回调，并传参返回值
-      onFulfilled(this.value)
-    } else if (this.status === REJECTED) {
-      // 若是失败状态，调用失败回调，并传参失败原因
-      onRejected(this.reason)
-    } else if (this.status === PENDING) {
-        // 如果是pending状态，先把所有回调函数存储，
-        // 等到resolve或reject函数执行时再调用
-        this.onFulfilledCallbacks.push(onFulfilled)
-        this.onRejectedCallbacks.push(onRejected)
-    }
+    // 为了链式调用，直接创建一个MyPromise，并在最后 return 出去
+    const otherPromise = new MyPromise((resolve, reject) => {
+      // 这里的内容会立即执行
+      if (this.status === FULFILLED) {
+        // 成功回调函数执行得到的返回结果，若无return值则默认undefined
+        const result = onFulfilled(this.value) || undefined
+        // 调用resolve并传入返回结果，这样下个链式调用的then就能得到此结果
+        resolve(result)
+      } else if (this.status === REJECTED) {
+        // 若是失败状态，调用失败回调，并传参失败原因
+        onRejected(this.reason)
+      } else if (this.status === PENDING) {
+          // 如果是pending状态，先把所有回调函数存储，
+          // 等到resolve或reject函数执行时再调用
+          this.onFulfilledCallbacks.push(onFulfilled)
+          this.onRejectedCallbacks.push(onRejected)
+      }
+    })
+
+    return otherPromise
   }
 }

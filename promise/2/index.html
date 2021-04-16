@@ -10,23 +10,17 @@
 <body>
   <script>
     const promise = new MyPromise((resolve, reject) => {
-      setTimeout(() => {
         resolve('success')
-        // reject('error')
-      }, 600)
     })
 
-    promise.then((value) => {
-      console.log('then onResolved 1', value)
-    })
-
-    promise.then((value) => {
-      console.log('then onResolved 2', value)
-    })
-
-    promise.then((value) => {
-      console.log('then onResolved 3', value)
-    })
+    promise
+      .then((value) => {
+        console.log('then onResolved 1', value)
+        return '第一个then返回结果'
+      })
+      .then((value) => {
+        console.log('then onResolved 2', value)
+      })
   </script>
 </body>
 </html>
