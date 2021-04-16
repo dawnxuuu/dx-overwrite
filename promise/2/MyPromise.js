@@ -58,8 +58,8 @@ class MyPromise {
       if (this.status === FULFILLED) {
         // 成功回调函数执行得到的返回结果，若无return值则默认undefined
         const result = onFulfilled(this.value) || undefined
-        // 调用resolve并传入返回结果，这样下个链式调用的then就能得到此结果
-        resolve(result)
+        // 统一方法处理
+        handleResult(result, resolve, reject)
       } else if (this.status === REJECTED) {
         // 若是失败状态，调用失败回调，并传参失败原因
         onRejected(this.reason)
@@ -72,5 +72,16 @@ class MyPromise {
     })
 
     return otherPromise
+  }
+}
+
+function handleResult (result, resolve, reject) {
+  // 判断返回结果是不是MyPromise实例
+  if (result instanceof MyPromise) {
+    // 调用MyPromise实例的then方法，
+    result.then(resolve, reject)
+  } else {
+    // 调用resolve并传入返回结果，这样下个链式调用的then就能得到此结果
+    resolve(result)
   }
 }

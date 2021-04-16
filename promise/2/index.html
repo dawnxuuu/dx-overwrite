@@ -13,6 +13,12 @@
         resolve('success')
     })
 
+    const other = function () {
+      return new MyPromise((resolve, reject) => {
+        resolve('other')
+      })
+    }
+
     promise
       .then((value) => {
         console.log('then onResolved 1', value)
@@ -20,6 +26,10 @@
       })
       .then((value) => {
         console.log('then onResolved 2', value)
+        return other()
+      })
+      .then((value) => {
+        console.log('then onResolved 3', value)
       })
   </script>
 </body>
