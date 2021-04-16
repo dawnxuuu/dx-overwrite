@@ -16,13 +16,17 @@
       }, 600)
     })
 
-    promise.then(
-      (value) => {
-        console.log('then onResolved', value)
-      },
-      (reason) => {
-        console.log('then onRejected', reason)
-      })
+    promise.then((value) => {
+      console.log('then onResolved 1', value)
+    })
+
+    promise.then((value) => {
+      console.log('then onResolved 2', value)
+    })
+
+    promise.then((value) => {
+      console.log('then onResolved 3', value)
+    })
   </script>
 </body>
 </html>
