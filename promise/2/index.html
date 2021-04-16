@@ -10,8 +10,9 @@
 <body>
   <script>
     const promise = new MyPromise((resolve, reject) => {
-      reject('error')
-      resolve('success')
+      setTimeout(() => {
+        resolve('success')
+      }, 600)
     })
 
     promise.then(
