@@ -11,9 +11,9 @@ class MyPromise {
   // 失败后的值
   reason = null
   // 存储成功回调函数
-  onFulfilledCallback = null
+  onFulfilledCallbacks = []
   // 存储失败回调函数
-  onRejectedCallback= null
+  onRejectedCallbacks= []
 
   constructor (executer) {
     // executer会立即执行，传入resolve,reject两个函数参数
@@ -29,8 +29,10 @@ class MyPromise {
       this.status = FULFILLED
       // 保存成功后的值
       this.value = value
-      // 如果存在成功回调则调用
-      this.onFulfilledCallback && this.onFulfilledCallback(value)
+      // 将所有成功回调拿出来执行
+      while (this.onFulfilledCallbacks.length) {
+        this.onFulfilledCallbacks.shift()(value)
+      }
     }
   }
 
@@ -42,8 +44,10 @@ class MyPromise {
       this.status = REJECTED
       // 保存失败后的值
       this.reason = reason
-      // 如果存在失败回调则调用
-      this.onRejectedCallback && this.onRejectedCallback(reason)
+      // 将所有失败回调拿出来执行
+      while (this.onRejectedCallbacks.length) {
+        this.onRejectedCallbacks.shift()(reason)
+      }
     }
   }
 
@@ -56,10 +60,10 @@ class MyPromise {
       // 若是失败状态，调用失败回调，并传参失败原因
       onRejected(this.reason)
     } else if (this.status === PENDING) {
-        // 如果是pending状态，先把两个回调函数存储，
+        // 如果是pending状态，先把所有回调函数存储，
         // 等到resolve或reject函数执行时再调用
-        this.onFulfilledCallback = onFulfilled
-        this.onRejectedCallback = onRejected
+        this.onFulfilledCallbacks.push(onFulfilled)
+        this.onRejectedCallbacks.push(onRejected)
     }
   }
 }
