@@ -10,12 +10,16 @@
 <body>
   <script>
     const promise = new MyPromise((resolve, reject) => {
+      setTimeout(() => {
         resolve('success')
+      }, 800);
     })
 
     const other = function () {
       return new MyPromise((resolve, reject) => {
-        resolve('other')
+        setTimeout(() => {
+          resolve('other')
+        }, 400);
       })
     }
 

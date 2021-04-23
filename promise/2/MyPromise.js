@@ -52,7 +52,7 @@ class MyPromise {
   }
 
   then (onFulfilled, onRejected) {
-    // 为了链式调用，直接创建一个MyPromise，并在最后 return 出去
+    // 为了链式调用，创建一个新的MyPromise实例，并在最后 return 出去
     const otherPromise = new MyPromise((resolve, reject) => {
       // 这里的内容会立即执行
       if (this.status === FULFILLED) {
@@ -66,7 +66,12 @@ class MyPromise {
       } else if (this.status === PENDING) {
           // 如果是pending状态，先把所有回调函数存储，
           // 等到resolve或reject函数执行时再调用
-          this.onFulfilledCallbacks.push(onFulfilled)
+          // 这里会向回调数组中推入一个函数，等待执行器中异步任务完成后resolve函数被调用时，就会拿出此函数进行调用，
+          this.onFulfilledCallbacks.push(() => {
+            const result = onFulfilled(this.value) || undefined
+            handleResult(result, resolve, reject)
+          })
+
           this.onRejectedCallbacks.push(onRejected)
       }
     })
