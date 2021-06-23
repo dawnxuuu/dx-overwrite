@@ -4,7 +4,7 @@
   "description": "Overwrite some common javascript patterns/methods.",
   "main": "promise/2/promise.js",
   "scripts": {
-    "test": "promises-aplus-tests promise/2/promise.js"
+    "test": "promises-aplus-tests promise/2/MyPromise.js"
   },
   "author": "",
   "license": "ISC",
