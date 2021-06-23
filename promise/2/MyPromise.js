@@ -68,7 +68,7 @@ class MyPromise {
         queueMicrotask(() => {
           try {
             // 成功回调函数执行得到的返回结果，若无return值则默认undefined
-            const result = onFulfilled(this.value) || undefined
+            const result = onFulfilled(this.value)
             // 统一处理then中的回调函数执行结果
             handleResult(anotherPromise, result, resolve, reject)
           } catch (error) {
@@ -82,7 +82,7 @@ class MyPromise {
         queueMicrotask(() => {
           try {
             // 若是失败状态，调用失败回调，并传参失败原因
-            const result = onRejected(this.reason) || undefined
+            const result = onRejected(this.reason)
             handleResult(anotherPromise, result, resolve, reject)
           } catch (error) {
             reject(error)
@@ -138,17 +138,48 @@ function handleResult (anotherPromise, result, resolve, reject) {
     return reject(new TypeError('Chaining cycle detected for promise #<Promise>'))
   }
 
-  // 判断返回结果是不是MyPromise实例
-  if (result instanceof MyPromise) {
-    // 调用MyPromise实例的then方法，
-    result.then(resolve, reject)
+  if (typeof result === 'object' || typeof result === 'function') {
+    if (result === null) {
+      return resolve(result)
+    }
+
+    let then
+    try {
+      then = result.then
+    } catch (error) {
+      return reject(error)
+    }
+
+    if (typeof then === 'function') {
+      let called = false
+      try {
+        then.call(
+          result,
+          y => {
+            if (called) return
+            called = true
+            handleResult(anotherPromise, y, resolve, reject)
+          },
+          r => {
+            if (called) return
+            called = true
+            reject(r)
+          }
+          )
+      } catch (error) {
+        if (called) return
+        reject(error)
+      }
+    } else {
+      resolve(result)
+    }
   } else {
     // 调用resolve并传入返回结果，这样下个链式调用的then就能得到此结果
     resolve(result)
   }
 }
 
-
+// 单元测试配置代码
 MyPromise.deferred = function () {
   var result = {}
   result.promise = new MyPromise(function (resolve, reject) {
