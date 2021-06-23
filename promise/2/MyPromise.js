@@ -16,8 +16,13 @@ class MyPromise {
   onRejectedCallbacks= []
 
   constructor (executer) {
-    // executer会立即执行，传入resolve,reject两个函数参数
-    executer(this.resolve, this.reject)
+    try {
+      // executer会立即执行，传入resolve,reject两个函数参数
+      executer(this.resolve, this.reject)
+    } catch (error) {
+      // 有错误直接执行reject
+      this.reject(error)
+    }
   }
 
   // 使用箭头函数保证this指向当前实例对象
