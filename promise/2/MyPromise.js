@@ -73,18 +73,40 @@ class MyPromise {
           }
         })
       } else if (this.status === REJECTED) {
-        // 若是失败状态，调用失败回调，并传参失败原因
-        onRejected(this.reason)
+        queueMicrotask(() => {
+          try {
+            // 若是失败状态，调用失败回调，并传参失败原因
+            const result = onRejected(this.reason) || undefined
+            handleResult(otherPromise, result, resolve, reject)
+          } catch (error) {
+            reject(error)
+          }
+        })
       } else if (this.status === PENDING) {
           // 如果是pending状态，先把所有回调函数存储，
           // 等到resolve或reject函数执行时再调用
           // 这里会向回调数组中推入一个函数，等待执行器中异步任务完成后resolve函数被调用时，就会拿出此函数进行调用，
           this.onFulfilledCallbacks.push(() => {
-            const result = onFulfilled(this.value) || undefined
-            handleResult(result, resolve, reject)
+            queueMicrotask(() => {
+              try {
+                const result = onFulfilled(this.value) || undefined
+                handleResult(otherPromise, result, resolve, reject)
+              } catch (error) {
+                reject(error)
+              }
+            })
           })
 
-          this.onRejectedCallbacks.push(onRejected)
+          this.onRejectedCallbacks.push(() => {
+            queueMicrotask(() => {
+              try {
+                const result = onRejected(this.reason) || undefined
+                handleResult(otherPromise, result, resolve, reject)
+              } catch (error) {
+                reject(error)
+              }
+            })
+          })
       }
     })
 

@@ -10,23 +10,36 @@
 <body>
   <script>
     const promise = new MyPromise((resolve, reject) => {
-      resolve('success')
+      setTimeout(() => {
+        resolve('success')
+      }, 100);
     })
 
-    promise.then(
+    const p1 = promise.then(
       value => {
         console.log('resolve1', value)
-        throw new Error('then回调错误')
+        return p1
       },
       reason => {
         console.log('reject1', reason)
       }
-    ).then(
+    )
+
+    p1.then(
       value => {
         console.log('resolve2', value)
+        return 'resolve1'
       },
       reason => {
         console.log('reject2', reason)
+        return 'reject1'
+      }
+    ).then(
+      value => {
+        console.log('resolve3', value)
+      },
+      reason => {
+        console.log('reject3', reason)
       }
     )
   </script>
