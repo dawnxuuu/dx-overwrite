@@ -10,31 +10,13 @@
 <body>
   <script>
     const promise = new MyPromise((resolve, reject) => {
-      setTimeout(() => {
-        resolve('success')
-      }, 800);
+      resolve('success')
     })
 
-    const other = function () {
-      return new MyPromise((resolve, reject) => {
-        setTimeout(() => {
-          resolve('other')
-        }, 400);
-      })
-    }
-
-    promise
-      .then((value) => {
-        console.log('then onResolved 1', value)
-        return '第一个then返回结果'
-      })
-      .then((value) => {
-        console.log('then onResolved 2', value)
-        return other()
-      })
-      .then((value) => {
-        console.log('then onResolved 3', value)
-      })
+    const p1 = promise.then(value => {
+      console.log(value)
+      return p1
+    })
   </script>
 </body>
 </html>
