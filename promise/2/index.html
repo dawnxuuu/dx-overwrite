@@ -13,10 +13,20 @@
       resolve('success')
     })
 
-    const p1 = promise.then(value => {
-      console.log(value)
+    var p1 = promise.then(value => {
+      console.log('resolve1', value)
       return p1
     })
+
+    // 期望要走reject回调
+    p1.then(
+      (value) => {
+        console.log('resolve2', value)
+      },
+      reason => {
+        console.log('reject3', reason.message)
+      }
+    )
   </script>
 </body>
 </html>

@@ -53,13 +53,13 @@ class MyPromise {
 
   then (onFulfilled, onRejected) {
     // 为了链式调用，创建一个新的MyPromise实例，并在最后 return 出去
-    const otherPromise = new MyPromise((resolve, reject) => {
+    var otherPromise = new MyPromise((resolve, reject) => {
       // 这里的内容会立即执行
       if (this.status === FULFILLED) {
         // 成功回调函数执行得到的返回结果，若无return值则默认undefined
         const result = onFulfilled(this.value) || undefined
-        // 统一方法处理
-        handleResult(result, resolve, reject)
+        // 统一方法处理。传入otherPromise实例以判断是否与result相等
+        handleResult(otherPromise, result, resolve, reject)
       } else if (this.status === REJECTED) {
         // 若是失败状态，调用失败回调，并传参失败原因
         onRejected(this.reason)
@@ -80,7 +80,12 @@ class MyPromise {
   }
 }
 
-function handleResult (result, resolve, reject) {
+function handleResult (otherPromise, result, resolve, reject) {
+  // 如果相等，说明then回调return的是自己，抛出类型错误并返回
+  if (otherPromise === result) {
+    return reject(new TypeError('Chaining cycle detected for promise #<Promise>'))
+  }
+
   // 判断返回结果是不是MyPromise实例
   if (result instanceof MyPromise) {
     // 调用MyPromise实例的then方法，
