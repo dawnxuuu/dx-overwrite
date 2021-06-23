@@ -9,15 +9,12 @@
 </head>
 <body>
   <script>
-    const promise = new MyPromise((resolve, reject) => {
-      setTimeout(() => {
-        // resolve('success')
-        reject('fail')
-      }, 100);
+    MyPromise.resolve('123').then((value) => {
+        console.log(value);
+        return MyPromise.resolve(4);
+    }).then((res) => {
+        console.log(res)
     })
-
-    promise.then().then().then(value => console.log(value))
-    promise.then().then().then(value => console.log(value), reason => console.log(reason))
   </script>
 </body>
 </html>
