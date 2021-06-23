@@ -57,6 +57,9 @@ class MyPromise {
   }
 
   then (onFulfilled, onRejected) {
+    onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : value => value;
+    onRejected = typeof onRejected === 'function' ? onRejected : reason => {throw reason};
+
     // 为了链式调用，创建一个新的MyPromise实例，并在最后 return 出去
     const otherPromise = new MyPromise((resolve, reject) => {
       // 这里的内容会立即执行
