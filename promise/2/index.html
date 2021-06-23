@@ -10,16 +10,23 @@
 <body>
   <script>
     const promise = new MyPromise((resolve, reject) => {
-      throw new Error('执行器错误')
       resolve('success')
     })
 
     promise.then(
       value => {
-        console.log('resolve', value)
+        console.log('resolve1', value)
+        throw new Error('then回调错误')
       },
       reason => {
-        console.log('reject', reason.message)
+        console.log('reject1', reason)
+      }
+    ).then(
+      value => {
+        console.log('resolve2', value)
+      },
+      reason => {
+        console.log('reject2', reason)
       }
     )
   </script>

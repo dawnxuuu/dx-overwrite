@@ -63,10 +63,14 @@ class MyPromise {
       if (this.status === FULFILLED) {
         // 创建一个微任务，等待 otherPromise 完成初始化再执行then回调
         queueMicrotask(() => {
-          // 成功回调函数执行得到的返回结果，若无return值则默认undefined
-          const result = onFulfilled(this.value) || undefined
-          // 统一方法处理。传入otherPromise实例以判断是否与result相等
-          handleResult(otherPromise, result, resolve, reject)
+          try {
+            // 成功回调函数执行得到的返回结果，若无return值则默认undefined
+            const result = onFulfilled(this.value) || undefined
+            // 统一方法处理。传入otherPromise实例以判断是否与result相等
+            handleResult(otherPromise, result, resolve, reject)
+          } catch (error) {
+            reject(error)
+          }
         })
       } else if (this.status === REJECTED) {
         // 若是失败状态，调用失败回调，并传参失败原因
