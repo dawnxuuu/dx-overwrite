@@ -61,59 +61,50 @@ class MyPromise {
     onRejected = typeof onRejected === 'function' ? onRejected : reason => {throw reason};
 
     // 为了链式调用，创建一个新的MyPromise实例，并在最后 return 出去
-    const otherPromise = new MyPromise((resolve, reject) => {
-      // 这里的内容会立即执行
-      if (this.status === FULFILLED) {
-        // 创建一个微任务，等待 otherPromise 完成初始化再执行then回调
+    const anotherPromise = new MyPromise((resolve, reject) => {
+
+      const fulfilledMicrotask = () => {
+        // 创建一个微任务，等待 anotherPromise 完成初始化再执行then回调
         queueMicrotask(() => {
           try {
             // 成功回调函数执行得到的返回结果，若无return值则默认undefined
             const result = onFulfilled(this.value) || undefined
-            // 统一方法处理。传入otherPromise实例以判断是否与result相等
-            handleResult(otherPromise, result, resolve, reject)
+            // 统一处理then中的回调函数执行结果
+            handleResult(anotherPromise, result, resolve, reject)
           } catch (error) {
             reject(error)
           }
         })
-      } else if (this.status === REJECTED) {
+      }
+
+      const rejectedMicrotask = () => {
+        // 创建一个微任务，等待 anotherPromise 完成初始化再执行then回调
         queueMicrotask(() => {
           try {
             // 若是失败状态，调用失败回调，并传参失败原因
             const result = onRejected(this.reason) || undefined
-            handleResult(otherPromise, result, resolve, reject)
+            handleResult(anotherPromise, result, resolve, reject)
           } catch (error) {
             reject(error)
           }
         })
+      }
+
+      // 这里的内容会立即执行
+      if (this.status === FULFILLED) {
+        fulfilledMicrotask()
+      } else if (this.status === REJECTED) {
+        rejectedMicrotask()
       } else if (this.status === PENDING) {
           // 如果是pending状态，先把所有回调函数存储，
           // 等到resolve或reject函数执行时再调用
           // 这里会向回调数组中推入一个函数，等待执行器中异步任务完成后resolve函数被调用时，就会拿出此函数进行调用，
-          this.onFulfilledCallbacks.push(() => {
-            queueMicrotask(() => {
-              try {
-                const result = onFulfilled(this.value) || undefined
-                handleResult(otherPromise, result, resolve, reject)
-              } catch (error) {
-                reject(error)
-              }
-            })
-          })
-
-          this.onRejectedCallbacks.push(() => {
-            queueMicrotask(() => {
-              try {
-                const result = onRejected(this.reason) || undefined
-                handleResult(otherPromise, result, resolve, reject)
-              } catch (error) {
-                reject(error)
-              }
-            })
-          })
+          this.onFulfilledCallbacks.push(fulfilledMicrotask)
+          this.onRejectedCallbacks.push(rejectedMicrotask)
       }
     })
 
-    return otherPromise
+    return anotherPromise
   }
 
   // resolve 静态方法
@@ -137,9 +128,13 @@ class MyPromise {
   }
 }
 
-function handleResult (otherPromise, result, resolve, reject) {
+// anotherPromise是为了then可链式调用而生成的一个新实例
+// result是then中两个回调函参执行返回的结果，默认为undefined
+// resolve是新实例的执行器函数中resolve形参
+// reject是新实例的执行器函数中reject形参
+function handleResult (anotherPromise, result, resolve, reject) {
   // 如果相等，说明then回调return的是自己，抛出类型错误并返回
-  if (otherPromise === result) {
+  if (anotherPromise === result) {
     return reject(new TypeError('Chaining cycle detected for promise #<Promise>'))
   }
 
